@@ -1339,6 +1339,9 @@ function renderApp() {
 }
 
 window.addEventListener("firebase-ready", () => { renderApp(); });
+window.addEventListener("resize", () => {
+  document.querySelectorAll("table.tracker textarea[data-field]").forEach(el => autoResize(el));
+});
 renderApp();
 </script>
 </body>
