@@ -237,12 +237,12 @@
     background: #fff; color: var(--ink);
   }
   table.tracker select { font-size: 0.78rem; padding: 6px 4px; }
-  .date-display-wrap { position: relative; }
-  .date-display-wrap input.date-native { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; margin: 0; padding: 0; border: none; }
+  .date-display-wrap input.date-native { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid var(--line); border-radius: 2px; background: #fff; font-size: 0.82rem; color: var(--ink); }
   .date-display-wrap .date-display {
     display: block; width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid var(--line); border-radius: 2px;
-    background: #fff; font-size: 0.82rem; color: var(--ink); pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    background: #fff; font-size: 0.82rem; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .date-display-wrap .date-display:hover { border-color: var(--maroon); }
   table.tracker textarea { resize: none; min-height: 34px; overflow: hidden; line-height: 1.4; font-family: inherit; display: block; }
 
   .status-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 600; white-space: nowrap; }
@@ -1246,7 +1246,7 @@ function renderTaskRow(t, p) {
     <td data-label="Portfolio"><select data-field="portfolio" title="${escapeAttr(t.portfolio||"")}">${p.portfolios.map(pf => `<option value="${escapeAttr(pf)}" ${pf===t.portfolio?"selected":""}>${pf}</option>`).join("")}</select></td>
     <td data-label="Due date">
       <div class="date-display-wrap">
-        <input type="date" value="${t.dueDate||""}" data-field="dueDate" class="date-native">
+        <input type="date" value="${t.dueDate||""}" data-field="dueDate" class="date-native" style="display:none;">
         <span class="date-display">${formatDateDisplay(t.dueDate)}</span>
       </div>
     </td>
@@ -1270,6 +1270,20 @@ function renderTaskRow(t, p) {
       updateDocIn("tasks", t.id, { [field]: value });
     });
   });
+  const dateSpan = tr.querySelector(".date-display");
+  const dateInput = tr.querySelector("input.date-native");
+  if (dateSpan && dateInput) {
+    dateSpan.addEventListener("click", () => {
+      dateSpan.style.display = "none";
+      dateInput.style.display = "block";
+      dateInput.focus();
+      if (dateInput.showPicker) { try { dateInput.showPicker(); } catch (e) {} }
+    });
+    dateInput.addEventListener("blur", () => {
+      dateInput.style.display = "none";
+      dateSpan.style.display = "block";
+    });
+  }
   return tr;
 }
 function renderCheckinRow(c) {
